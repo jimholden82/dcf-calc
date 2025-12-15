@@ -2,6 +2,8 @@
 
 A simple discounted cash flow calculator to estimate implied investment returns.
 
+**Live Demo**: https://jimholden82.github.io/dcf-calc/
+
 ## Usage
 
 Open `index.html` in your browser. Enter your inputs and the implied annual return (CAGR) will calculate in real-time.
