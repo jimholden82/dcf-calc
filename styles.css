@@ -151,6 +151,20 @@ input::placeholder {
     display: block;
 }
 
+.github-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #64748b;
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.github-link:hover {
+    color: #3b82f6;
+}
+
 @media (max-width: 480px) {
     .container {
         padding: 24px;
