@@ -3,64 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DCF Calculator</title>
+    <title>Investing Tools</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>DCF Calculator</h1>
-        <p class="subtitle">Calculate implied returns from cash flow projections</p>
+        <nav class="nav">
+            <button class="nav__tab is-active" data-tool="dcf">DCF Calculator</button>
+            <button class="nav__tab" data-tool="dividend">Dividend Yield vs Growth</button>
+        </nav>
 
-        <div class="input-group">
-            <label for="price">Current Share Price ($)</label>
-            <input type="number" id="price" placeholder="e.g., 100.00" step="0.01">
-            <span class="error-message">Please enter a valid price</span>
-        </div>
+        <!-- DCF Calculator -->
+        <div id="dcf-tool" class="tool is-active">
+            <h1 class="tool__title">DCF Calculator</h1>
+            <p class="tool__subtitle">Calculate implied returns from cash flow projections</p>
 
-        <div class="input-group">
-            <label for="fcf">Current FCF per Share ($)</label>
-            <input type="number" id="fcf" placeholder="e.g., 5.00" step="0.01">
-            <span class="error-message">Please enter a valid number</span>
-        </div>
-
-        <div class="input-group">
-            <label for="growth">Annual Growth Rate (%)</label>
-            <input type="number" id="growth" placeholder="e.g., 10" step="0.1">
-            <span class="error-message">Please enter a valid percentage</span>
-        </div>
-
-        <div class="input-group">
-            <label for="years">Years of Growth</label>
-            <input type="number" id="years" placeholder="e.g., 10" step="1" min="1">
-            <span class="error-message">Please enter at least 1 year</span>
-        </div>
-
-        <div class="input-group">
-            <label for="exitYield">Exit FCF Yield (%)</label>
-            <input type="number" id="exitYield" placeholder="e.g., 5" step="0.1">
-            <span class="error-message">Please enter a valid yield</span>
-        </div>
-
-        <div class="result-section">
-            <div class="result-label">Implied Annual Return (CAGR)</div>
-            <div class="result-value" id="result">--%</div>
-            <div class="result-details">
-                <div class="detail-item">
-                    <div class="detail-label">Future FCF/Share</div>
-                    <div class="detail-value" id="futureFcf">--</div>
+            <div class="panel panel--primary">
+                <div class="input-group">
+                    <label class="input-group__label" for="price">Current Share Price ($)</label>
+                    <input class="input-group__field" type="number" id="price" placeholder="e.g., 100.00" step="0.01">
+                    <span class="input-group__error">Please enter a valid price</span>
                 </div>
-                <div class="detail-item">
-                    <div class="detail-label">Future Price</div>
-                    <div class="detail-value" id="futurePrice">--</div>
+
+                <div class="input-group">
+                    <label class="input-group__label" for="fcf">Current FCF per Share ($)</label>
+                    <input class="input-group__field" type="number" id="fcf" placeholder="e.g., 5.00" step="0.01">
+                    <span class="input-group__error">Please enter a valid number</span>
                 </div>
+
+                <div class="input-group">
+                    <label class="input-group__label" for="growth">Annual Growth Rate (%)</label>
+                    <input class="input-group__field" type="number" id="growth" placeholder="e.g., 10" step="0.1">
+                    <span class="input-group__error">Please enter a valid percentage</span>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-group__label" for="years">Years of Growth</label>
+                    <input class="input-group__field" type="number" id="years" placeholder="e.g., 10" step="1" min="1">
+                    <span class="input-group__error">Please enter at least 1 year</span>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-group__label" for="exitYield">Exit FCF Yield (%)</label>
+                    <input class="input-group__field" type="number" id="exitYield" placeholder="e.g., 5" step="0.1">
+                    <span class="input-group__error">Please enter a valid yield</span>
+                </div>
+            </div>
+
+            <div class="results results--2col">
+                <div class="result-card result-card--neutral">
+                    <div class="result-card__label">Future FCF/Share</div>
+                    <div class="result-card__value" id="futureFcf">--</div>
+                </div>
+                <div class="result-card result-card--neutral">
+                    <div class="result-card__label">Future Price</div>
+                    <div class="result-card__value" id="futurePrice">--</div>
+                </div>
+            </div>
+
+            <div class="result-card result-card--primary">
+                <div class="result-card__label">Implied Annual Return (CAGR)</div>
+                <div class="result-card__value" id="result">--%</div>
+            </div>
+
+            <div class="info-box">
+                <p class="info-box__text"><strong>How it works:</strong> Projects FCF growth over the specified period, divides by the exit FCF yield to get future price, then calculates the compound annual growth rate from current to future price.</p>
             </div>
         </div>
 
-        <div class="info">
-            <p><strong>How it works:</strong> Projects FCF growth over the specified period, divides by the exit FCF yield to get future price, then calculates the compound annual growth rate from current to future price.</p>
+        <!-- Dividend Yield vs Growth Calculator -->
+        <div id="dividend-tool" class="tool">
+            <h1 class="tool__title">Dividend Yield vs Growth</h1>
+            <p class="tool__subtitle">Compare yield-on-cost trajectories and find the crossover point</p>
+
+            <div class="dividend-panels">
+                <div class="panel panel--primary">
+                    <input type="text" id="stockAName" class="panel__title" value="High Yield">
+                    <div class="slider-group">
+                        <label class="slider-group__label" for="stockAYield">Initial Dividend Yield</label>
+                        <div class="slider-group__row">
+                            <input class="slider-group__slider" type="range" id="stockAYield" min="0" max="15" step="0.01" value="5">
+                            <div class="slider-group__value">
+                                <input class="slider-group__input" type="number" id="stockAYieldNum" min="0" max="15" step="0.01" value="5.00">
+                                <span class="slider-group__suffix">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label class="slider-group__label" for="stockAGrowth">Annual Dividend Growth</label>
+                        <div class="slider-group__row">
+                            <input class="slider-group__slider" type="range" id="stockAGrowth" min="0" max="25" step="0.01" value="3">
+                            <div class="slider-group__value">
+                                <input class="slider-group__input" type="number" id="stockAGrowthNum" min="0" max="25" step="0.01" value="3.00">
+                                <span class="slider-group__suffix">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel--secondary">
+                    <input type="text" id="stockBName" class="panel__title" value="High Growth">
+                    <div class="slider-group">
+                        <label class="slider-group__label" for="stockBYield">Initial Dividend Yield</label>
+                        <div class="slider-group__row">
+                            <input class="slider-group__slider" type="range" id="stockBYield" min="0" max="15" step="0.01" value="2">
+                            <div class="slider-group__value">
+                                <input class="slider-group__input" type="number" id="stockBYieldNum" min="0" max="15" step="0.01" value="2.00">
+                                <span class="slider-group__suffix">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label class="slider-group__label" for="stockBGrowth">Annual Dividend Growth</label>
+                        <div class="slider-group__row">
+                            <input class="slider-group__slider" type="range" id="stockBGrowth" min="0" max="25" step="0.01" value="10">
+                            <div class="slider-group__value">
+                                <input class="slider-group__input" type="number" id="stockBGrowthNum" min="0" max="25" step="0.01" value="10.00">
+                                <span class="slider-group__suffix">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="slider-group">
+                    <label class="slider-group__label" for="dividendYears">Time Horizon</label>
+                    <div class="slider-group__row">
+                        <input class="slider-group__slider" type="range" id="dividendYears" min="5" max="50" step="1" value="30">
+                        <div class="slider-group__value">
+                            <span id="dividendYearsDisplay" style="font-size: 18px; font-weight: 600; color: var(--color-text-primary);">30</span>
+                            <span class="slider-group__suffix">years</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results results--3col">
+                <div class="result-card result-card--neutral">
+                    <div class="result-card__label">Crossover Year</div>
+                    <div class="result-card__value" id="crossoverYear">--</div>
+                    <div class="result-card__sub" id="crossoverYield"></div>
+                </div>
+                <div class="result-card result-card--primary">
+                    <div class="result-card__label">Total Dividends (<span id="stockANameResult">High Yield</span>)</div>
+                    <div class="result-card__value" id="totalDividendsA">--</div>
+                    <div class="result-card__sub">of initial investment</div>
+                </div>
+                <div class="result-card result-card--secondary">
+                    <div class="result-card__label">Total Dividends (<span id="stockBNameResult">High Growth</span>)</div>
+                    <div class="result-card__value" id="totalDividendsB">--</div>
+                    <div class="result-card__sub">of initial investment</div>
+                </div>
+            </div>
+
+            <div class="chart">
+                <canvas id="dividendChart"></canvas>
+            </div>
+
+            <div class="info-box">
+                <p class="info-box__text"><strong>Formula:</strong> Crossover year n = ln(Y₁/Y₂) / ln((1+G₂)/(1+G₁)) where Y = initial yield, G = growth rate</p>
+            </div>
         </div>
 
-        <a href="https://github.com/jimholden82/dcf-calc" class="github-link" target="_blank">View on GitHub</a>
+        <a href="https://github.com/jimholden82/dcf-calc" class="link" target="_blank">View on GitHub</a>
     </div>
 
     <script src="script.js"></script>
